@@ -302,10 +302,12 @@ case.
 
 ## 📦 Template publishing
 
-`npx nera-contact-form` copies the template into
-`views/vendor/plugin-contact-form/` and the script into `assets/js/`. It
-**skips any file that already exists** so it never discards your edits; re-run
-with `--force` to overwrite (this replaces your customized copies):
+`npx nera-contact-form` copies the template into `views/vendor/plugin-contact-form/`
+and the script into `assets/js/`. Both destinations are **theme-aware**: on a
+themed site (a `theme/` folder) they go to `theme/views/vendor/plugin-contact-form/`
+and `theme/assets/js/` instead — where the build actually looks. It **skips any
+file that already exists** so it never discards your edits; re-run with `--force`
+to overwrite (this replaces your customized copies):
 
 ```bash
 npx nera-contact-form --force
@@ -313,7 +315,10 @@ npx nera-contact-form --force
 
 Because published copies are yours, upgrading the package does **not** update
 them. After a breaking change to the markup or class names, delete your vendor
-copy (and `assets/js/contact-form.js`) and re-publish.
+copy (and the published `contact-form.js`) and re-publish.
+
+> Theme-aware publishing requires `@nera-static/plugin-utils` ≥ 1.5.0, which
+> this plugin depends on.
 
 ## 🧪 Development
 

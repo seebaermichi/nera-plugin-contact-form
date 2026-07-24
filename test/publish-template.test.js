@@ -115,4 +115,29 @@ describe('template publishing', () => {
         expect(() => run()).toThrow()
         expect(fs.existsSync(templatesDir)).toBe(false)
     })
+
+    it('publishes into theme/ on a themed site', () => {
+        // A local theme/ folder means the build renders from theme/views and
+        // serves from theme/assets (plugin-utils >= 1.5.0 resolves both).
+        fs.mkdirSync(path.join(testDir, 'theme'), { recursive: true })
+
+        run()
+
+        expect(
+            fs.existsSync(
+                path.join(
+                    testDir,
+                    'theme/views/vendor/plugin-contact-form/contact-form.pug'
+                )
+            )
+        ).toBe(true)
+        expect(
+            fs.existsSync(path.join(testDir, 'theme/assets/js', CLIENT_JS))
+        ).toBe(true)
+        // And nothing lands in the deprecated root locations.
+        expect(fs.existsSync(templatesDir)).toBe(false)
+        expect(fs.existsSync(path.join(testDir, 'assets/js', CLIENT_JS))).toBe(
+            false
+        )
+    })
 })

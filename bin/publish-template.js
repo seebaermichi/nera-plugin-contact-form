@@ -1,46 +1,28 @@
 #!/usr/bin/env node
 
 import path from 'path'
-import fs from 'fs'
 import { fileURLToPath } from 'url'
-import { publishAllTemplates } from '@nera-static/plugin-utils'
+import { publishAllTemplates, publishAsset } from '@nera-static/plugin-utils'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const pluginName = 'plugin-contact-form'
 const sourceDir = path.resolve(__dirname, '../views/')
 const force = process.argv.includes('--force')
 
-// Publish all pug templates to views/vendor/plugin-contact-form/
-const result = publishAllTemplates({
-    pluginName,
+// Both destinations are theme-aware (plugin-utils >= 1.5.0): on a themed site
+// the template lands in theme/views/vendor/plugin-contact-form/ and the client
+// script in theme/assets/js/, where the build actually looks; on a legacy site
+// they fall back to the deprecated root views/ and assets/. Same skip-if-exists
+// rule for both, so re-running never discards a user's edits.
+const templatesOk = publishAllTemplates({
+    pluginName: 'plugin-contact-form',
     sourceDir,
     force,
 })
 
-// Also publish contact-form.js into assets/js/. Same skip-if-exists rule as
-// the templates above — re-running this command must not discard user edits.
-const publishClientJS = () => {
-    const jsSource = path.join(sourceDir, 'contact-form.js')
-    const jsTarget = path.resolve(process.cwd(), 'assets/js/contact-form.js')
+const clientJsOk = publishAsset({
+    sourceFile: path.join(sourceDir, 'contact-form.js'),
+    targetPath: 'js/contact-form.js',
+    force,
+})
 
-    if (fs.existsSync(jsTarget) && !force) {
-        console.log(
-            '⚠️  assets/js/contact-form.js already exists — skipping.\n' +
-                '    Re-run with --force to overwrite (this will discard your edits).'
-        )
-        return true
-    }
-
-    try {
-        fs.mkdirSync(path.dirname(jsTarget), { recursive: true })
-        fs.copyFileSync(jsSource, jsTarget)
-
-        console.log('✓ contact-form.js copied to assets/js/contact-form.js')
-        return true
-    } catch (err) {
-        console.error('✗ Failed to copy contact-form.js to assets/js/', err)
-        return false
-    }
-}
-
-process.exit(result && publishClientJS() ? 0 : 1)
+process.exit(templatesOk && clientJsOk ? 0 : 1)

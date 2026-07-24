@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-24
+
+### Changed
+
+- **Publishing is now theme-aware.** `npx nera-contact-form` publishes the
+    template and client script into `theme/views/vendor/` and `theme/assets/js/`
+    on a themed site (and still into root `views/`/`assets/` on a legacy one),
+    so a themed build finds them where the layered view resolver looks. The
+    client-JS copy now goes through `plugin-utils`' `publishAsset` instead of a
+    hand-rolled root `assets/js/` copy.
+- Raised the minimum `@nera-static/plugin-utils` to `^1.5.0`, which adds the
+    theme-aware `publishAsset` / `resolveAssetsDir` used above. No template,
+    config, or `app.contactForm` contract changed.
+
 ## [1.0.0] - 2026-07-24
 
 ### Added
