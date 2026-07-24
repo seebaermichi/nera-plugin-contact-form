@@ -1,0 +1,129 @@
+# Contact form configuration.
+#
+# This file inside the package is documentation/default only. Nera reads the
+# config from YOUR site at `config/contact-form.yaml` — copy this file there
+# and edit it. There is no merge between the two.
+#
+# The form has no backend: on submit the client script builds a `mailto:` link
+# from the fields below and opens the visitor's own mail client with the
+# subject and body pre-filled. Nothing is stored or sent by the website.
+
+# ── Global keys ──────────────────────────────────────────────────────────────
+
+# Where the message is addressed. Required — without it the form does not
+# render. The address is never printed as readable text (see `obfuscation`).
+recipient: hello@example.com
+
+# How the recipient address is protected from spam scrapers:
+#   entities   (default) — every character is emitted as an HTML numeric
+#                          entity, so the raw source holds no readable address.
+#                          The browser decodes it for the client script. Deters
+#                          naïve scrapers; a determined one can still decode it.
+#   jsassembly            — the address is emitted only as an array of character
+#                          codes and rebuilt in JavaScript at submit time, so it
+#                          never appears in the page source at all. Stronger,
+#                          but still not a guarantee.
+obfuscation: entities
+
+# Name of the honeypot field — a decoy input hidden from humans. Bots tend to
+# fill every field they see; any submission that fills this one is dropped
+# silently. Rename it if a real field of yours would otherwise clash.
+honeypot: website
+
+# ── Form content ─────────────────────────────────────────────────────────────
+#
+# Every value below is a TRANSLATION KEY. Nera's `t()` helper resolves it for
+# each page's language from `translations:` in config/app.yaml, falling back to
+# the key itself when there is no translation. So:
+#   • Single-language site — just write the final text (it is its own key).
+#   • Multilingual site    — use short keys here and translate them in app.yaml
+#                            (see the "Translations" example at the foot).
+# One field definition therefore serves every language; you do NOT repeat the
+# fields per language.
+
+# Pre-filled subject line of the generated email.
+subject: Contact form message
+
+# Text on the submit button.
+submit_label: Send message
+
+# Validation messages shown to the visitor.
+error_required: Please fill in all required fields.
+error_email: Please enter a valid email address.
+
+# How a checkbox is written into the email body.
+checkbox_checked_label: Yes
+checkbox_unchecked_label: No
+
+# Optional intro copy shown above the fields, and consent copy shown just above
+# the submit button. Both are injected as HTML (so a privacy-policy link works)
+# — author them yourself, never from user input.
+# intro_text: We usually reply within two working days.
+# consent_text: >
+#   By sending this message you open it in your own email client. See our
+#   <a href="/privacy.html">privacy policy</a> for details.
+
+# The form fields, rendered in order. Each needs a `name`; everything else is
+# optional. Supported `type`s: text (default), email, tel, textarea, select,
+# checkbox, radio. `select` and `radio` take an `options` list. `required: true`
+# is validated in the browser before the mailto link is built. `label`,
+# `placeholder` and each option `label` are translation keys; `name` and option
+# `value` are raw data and are never translated.
+fields:
+    - name: name
+      label: Your name
+      type: text
+      required: true
+      placeholder: Jane Doe
+
+    - name: email
+      label: Your email
+      type: email
+      required: true
+      placeholder: jane@example.com
+
+    - name: phone
+      label: Phone (optional)
+      type: tel
+
+    - name: subject_choice
+      label: Topic
+      type: select
+      required: true
+      options:
+          - { value: general, label: General enquiry }
+          - { value: support, label: Support }
+          - { value: feedback, label: Feedback }
+
+    - name: message
+      label: Message
+      type: textarea
+      required: true
+      placeholder: How can we help?
+
+    - name: newsletter
+      label: Add me to the newsletter
+      type: checkbox
+
+# ── Translations (multilingual sites) ────────────────────────────────────────
+#
+# To translate, use keys above and define them per language in config/app.yaml
+# — the SAME `translations:` block Nera already uses for the rest of the site.
+# For example, in config/contact-form.yaml:
+#
+#   subject: contact_subject
+#   fields:
+#       - { name: name, label: contact_name, type: text, required: true }
+#       - { name: message, label: contact_message, type: textarea, required: true }
+#
+# and in config/app.yaml:
+#
+#   translations:
+#       en:
+#           contact_subject: Contact form message
+#           contact_name: Your name
+#           contact_message: Message
+#       de:
+#           contact_subject: Kontaktformular
+#           contact_name: Ihr Name
+#           contact_message: Nachricht

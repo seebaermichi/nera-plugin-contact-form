@@ -1,0 +1,65 @@
+{
+    "name": "@nera-static/plugin-contact-form",
+    "version": "1.0.0",
+    "description": "A plugin for the Nera static site generator that renders a backend-free contact form which builds a mailto: link from configurable fields on submit.",
+    "main": "index.js",
+    "scripts": {
+        "publish-template": "node ./bin/publish-template.js",
+        "lint": "eslint .",
+        "test": "vitest",
+        "prepare": "husky"
+    },
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "bin": {
+        "publish-template": "./bin/publish-template.js",
+        "nera-contact-form": "./bin/publish-template.js"
+    },
+    "files": [
+        "bin",
+        "config",
+        "views",
+        "index.js",
+        "CHANGELOG.md",
+        "LICENSE"
+    ],
+    "keywords": [
+        "nera",
+        "nera-plugin",
+        "static-site-generator",
+        "contact-form",
+        "mailto",
+        "form",
+        "no-backend",
+        "jamstack"
+    ],
+    "author": "Michael Becker",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/seebaermichi/nera-plugin-contact-form.git"
+    },
+    "bugs": {
+        "url": "https://github.com/seebaermichi/nera-plugin-contact-form/issues"
+    },
+    "homepage": "https://github.com/seebaermichi/nera-plugin-contact-form#readme",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@nera-static/plugin-utils": "^1.2.0"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "devDependencies": {
+        "eslint": "^9.31.0",
+        "happy-dom": "^20.11.0",
+        "husky": "^9.1.7",
+        "pug": "^3.0.3",
+        "vitest": "^3.2.4"
+    },
+    "sideEffects": false
+}

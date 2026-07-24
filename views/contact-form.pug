@@ -1,0 +1,164 @@
+//- Contact form partial (plugin-contact-form).
+//-
+//- On submit the shipped client script — published to
+//- `assets/js/contact-form.js` and loaded at the foot of this file — builds a
+//- `mailto:` link and opens the visitor's mail client. There is no backend and
+//- nothing is submitted over the network.
+//-
+//- TRANSLATIONS: every user-facing string (labels, placeholders, subject,
+//- messages, checkbox Yes/No) is a translation key resolved here through the
+//- generator's `t()` helper for THIS page's language, so one field definition
+//- serves every language. A key with no translation renders literally, so a
+//- single-language site just writes the final text. `tr` falls back to identity
+//- when `t` is absent (e.g. a standalone render in a test).
+//-
+//- CONTRACT: if you customize this template, keep these exact hooks — the
+//- client script finds everything through them:
+//-   data-contact-form       the <form>
+//-   data-contact-config      the JSON config block (messages, labels, subject,
+//-                            error class) — inert data, not code
+//-   data-contact-field       every field whose value goes into the email
+//-   data-contact-label       that field's (resolved) label for the email body
+//-   data-contact-status      the validation-message region
+//-   data-contact-recipient / data-contact-recipient-codes   the recipient
+//-
+//- Field values come from YAML and are escaped (`#{}`). BEM class names are a
+//- public contract — renaming one is a breaking change.
+- var cf = (typeof app !== 'undefined' && app && app.contactForm)
+- var tr = (typeof t === 'function') ? t : function (key) { return key }
+if cf && cf.fields && cf.fields.length > 0
+    form.contact-form(novalidate, data-contact-form)
+        //- Everything the client needs, resolved for this language and packed
+        //- into inert JSON (NOT an executable script — the browser parses it as
+        //- data and never runs it). Escaping `<` keeps a stray `</script>` in a
+        //- translated value from breaking out of the element.
+        -
+            var clientConfig = {
+                subject: tr(cf.subject),
+                errorClass: cf.errorClass,
+                messages: {
+                    required: tr(cf.messages.required),
+                    email: tr(cf.messages.email)
+                },
+                booleanLabels: {
+                    checked: tr(cf.booleanLabels.checked),
+                    unchecked: tr(cf.booleanLabels.unchecked)
+                }
+            }
+            var clientConfigJson = JSON.stringify(clientConfig).replace(/</g, '\\u003c')
+        script(type="application/json", data-contact-config)!= clientConfigJson
+
+        //- The recipient is carried on a data attribute, never printed as text.
+        //- In `entities` mode every character is an HTML numeric entity,
+        //- rendered unescaped with `!=` so the source holds no readable
+        //- address; the browser decodes the attribute back for the client. In
+        //- `jsassembly` mode only an array of char codes is emitted and the
+        //- address never appears in the source at all.
+        if cf.recipientMode === 'jsassembly'
+            span.contact-form__recipient(hidden, data-contact-recipient-codes=cf.recipientCodes)
+        else
+            span.contact-form__recipient(hidden, data-contact-recipient!=cf.recipient)
+
+        if cf.introText
+            //- Site-owner authored HTML (see config), resolved per language.
+            .contact-form__intro !{tr(cf.introText)}
+
+        each field in cf.fields
+            - var fieldId = 'contact-' + field.name
+            - var fieldLabel = tr(field.label)
+            .contact-form__field(class='contact-form__field--' + field.type)
+                if field.type === 'checkbox'
+                    label.contact-form__label.contact-form__label--checkbox(for=fieldId)
+                        input.contact-form__input.contact-form__input--checkbox(
+                            type="checkbox",
+                            id=fieldId,
+                            name=field.name,
+                            data-contact-field,
+                            data-contact-label=fieldLabel,
+                            required=field.required
+                        )
+                        span.contact-form__label-text #{fieldLabel}
+                else if field.type === 'textarea'
+                    label.contact-form__label(for=fieldId) #{fieldLabel}
+                    textarea.contact-form__input.contact-form__input--textarea(
+                        id=fieldId,
+                        name=field.name,
+                        placeholder=(field.placeholder ? tr(field.placeholder) : false),
+                        data-contact-field,
+                        data-contact-label=fieldLabel,
+                        required=field.required
+                    )
+                else if field.type === 'select'
+                    label.contact-form__label(for=fieldId) #{fieldLabel}
+                    select.contact-form__input.contact-form__input--select(
+                        id=fieldId,
+                        name=field.name,
+                        data-contact-field,
+                        data-contact-label=fieldLabel,
+                        required=field.required
+                    )
+                        if field.required
+                            option(value="", disabled, selected) …
+                        each option in field.options
+                            option(value=option.value) #{tr(option.label)}
+                else if field.type === 'radio'
+                    span.contact-form__label #{fieldLabel}
+                    .contact-form__options(role="radiogroup", aria-label=fieldLabel)
+                        each option, i in field.options
+                            - var optId = fieldId + '-' + i
+                            label.contact-form__label.contact-form__label--radio(for=optId)
+                                input.contact-form__input.contact-form__input--radio(
+                                    type="radio",
+                                    id=optId,
+                                    name=field.name,
+                                    value=option.value,
+                                    data-contact-field,
+                                    data-contact-label=fieldLabel,
+                                    required=field.required
+                                )
+                                span.contact-form__label-text #{tr(option.label)}
+                else
+                    label.contact-form__label(for=fieldId) #{fieldLabel}
+                    input.contact-form__input(
+                        type=field.type,
+                        id=fieldId,
+                        name=field.name,
+                        placeholder=(field.placeholder ? tr(field.placeholder) : false),
+                        data-contact-field,
+                        data-contact-label=fieldLabel,
+                        required=field.required
+                    )
+
+        //- Honeypot: hidden from humans, tempting to bots. It carries no
+        //- honeypot-specific attribute and is not named as a trap anywhere — to
+        //- a scraper it is an ordinary field. The client identifies it
+        //- structurally: it is the only named control WITHOUT a
+        //- `data-contact-field` marker (every real field has one), and any
+        //- submission that fills it is dropped silently.
+        //-
+        //- The label deliberately mirrors the field name (a plausible, commonly
+        //- autofilled field like "website") — it must NOT instruct anyone to
+        //- leave it blank, or a bot reading the HTML would simply skip it. Real
+        //- users never read it: the container is `aria-hidden` and moved
+        //- off-screen by the inline style, which also guarantees it stays hidden
+        //- even if the site ships no CSS for it. `autocomplete="off"` stops a
+        //- browser from autofilling it for a real visitor (a false positive).
+        .contact-form__decoy(aria-hidden="true", style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden")
+            label(for='contact-' + cf.honeypot)= cf.honeypot
+            input(
+                type="text",
+                id='contact-' + cf.honeypot,
+                name=cf.honeypot,
+                tabindex="-1",
+                autocomplete="off"
+            )
+
+        if cf.consentText
+            //- Site-owner authored HTML (see config), resolved per language.
+            .contact-form__consent !{tr(cf.consentText)}
+
+        .contact-form__status(role="alert", aria-live="polite", data-contact-status)
+
+        button.contact-form__submit(type="submit") #{tr(cf.submitLabel)}
+
+    script(src="/js/contact-form.js")
