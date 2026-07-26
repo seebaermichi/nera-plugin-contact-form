@@ -11,6 +11,8 @@ pre-filled. Nothing is stored, and nothing is sent over the network by your
 site — which makes it about as privacy-friendly as a contact form gets (see
 [Data protection & GDPR](#-data-protection--gdpr)).
 
+📖 **Documentation:** [nera.js.org](https://nera.js.org)
+
 ## ✨ Features
 
 - Fully client-side — no backend, no framework, no third-party service
