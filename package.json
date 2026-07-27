@@ -55,11 +55,11 @@
         "node": ">=20.0.0"
     },
     "devDependencies": {
-        "eslint": "^9.31.0",
+        "eslint": "^10.7.0",
         "happy-dom": "^20.11.0",
         "husky": "^9.1.7",
         "pug": "^3.0.3",
-        "vitest": "^3.2.4"
+        "vitest": "^4.1.10"
     },
     "sideEffects": false
 }
