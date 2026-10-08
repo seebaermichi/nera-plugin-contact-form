@@ -222,13 +222,26 @@ export function getAppData(data) {
     const recipientMode =
         config.obfuscation === 'jsassembly' ? 'jsassembly' : 'entities'
 
+    const honeypot = nonEmptyString(config.honeypot, DEFAULT_HONEYPOT).trim()
+
+    // A real field sharing the honeypot's name (easy with the default
+    // `website`) renders two elements with the same `id="contact-<name>"`.
+    // The form still works — the client tells them apart by the
+    // `data-contact-field` marker — but the HTML is invalid, so say so rather
+    // than fail silently. Output is unchanged.
+    if (fields.some((field) => field.name === honeypot)) {
+        console.warn(
+            `⚠️ plugin-contact-form: field "${honeypot}" has the same name as the honeypot — set \`honeypot:\` to a name no field uses.`
+        )
+    }
+
     const contactForm = {
         recipientMode,
         // Rendered as the honeypot input's `name` only. Nothing in the page —
         // no attribute, no config key — labels it as a trap; the client
         // identifies it structurally, as the one named control without a
         // `data-contact-field` marker.
-        honeypot: nonEmptyString(config.honeypot, DEFAULT_HONEYPOT).trim(),
+        honeypot,
         errorClass: DEFAULT_ERROR_CLASS,
         // Translation keys — resolved in the template via `t()`.
         submitLabel: nonEmptyString(config.submit_label, DEFAULT_SUBMIT_LABEL),

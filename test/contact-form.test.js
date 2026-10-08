@@ -3,7 +3,15 @@ import os from 'os'
 import path from 'path'
 import pug from 'pug'
 import { fileURLToPath } from 'url'
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
+import {
+    describe,
+    it,
+    expect,
+    beforeAll,
+    afterAll,
+    beforeEach,
+    vi,
+} from 'vitest'
 import { getAppData } from '../index.js'
 
 const REPO_ROOT = path.resolve(
@@ -182,6 +190,33 @@ describe('field normalization', () => {
             { value: 'general', label: 'general' },
             { value: 'sup', label: 'Support' },
         ])
+    })
+
+    it('warns when a field shares the honeypot name, without changing output', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        writeConfig(
+            'recipient: a@b.com\nfields:\n  - name: website\n    label: Website\n'
+        )
+
+        const { contactForm } = getAppData(appData())
+
+        expect(warn).toHaveBeenCalledWith(
+            expect.stringContaining('same name as the honeypot')
+        )
+        expect(contactForm.honeypot).toBe('website')
+        expect(contactForm.fields.map((field) => field.name)).toEqual([
+            'website',
+        ])
+        warn.mockRestore()
+    })
+
+    it('does not warn when the honeypot name is free', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+        getAppData(appData())
+
+        expect(warn).not.toHaveBeenCalled()
+        warn.mockRestore()
     })
 })
 

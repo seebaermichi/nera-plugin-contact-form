@@ -1,6 +1,6 @@
 {
     "name": "@nera-static/plugin-contact-form",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "A plugin for the Nera static site generator that renders a backend-free contact form which builds a mailto: link from configurable fields on submit.",
     "main": "index.js",
     "scripts": {

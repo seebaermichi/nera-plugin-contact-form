@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-10-08
+
+### Fixed
+
+- A field with the same `name` as the honeypot (default `website`) rendered
+    two elements with `id="contact-website"` — invalid HTML, with no hint why.
+    The plugin now logs a warning naming the clash. Rendered output is
+    unchanged.
+- README: the Usage example now works on a site scaffolded with `nera new`.
+    It placed the layout in root `views/` and extended `layouts/default`, both
+    of which fail on the scaffold's `theme/views/` + `layouts/layout`; it told
+    you to run `npm run render`, which a thin site does not have (`nera build`);
+    and its page example began with a filename comment above the frontmatter,
+    which made Nera skip the page silently.
+- README: Template Publishing now says the template is skipped per
+    **directory** (a deleted `contact-form.pug` is not restored, exit 0) while
+    the script is skipped per file, and that `--force` is what delivers a newer
+    template and script. It previously said every existing file is skipped.
+- README: the Nera floor is stated as v4.1.0+ with the feature named
+    (verified by rendering on 4.1.0); it claimed v4.3.0+ without a reason. The
+    root-absolute `include /vendor/…` alternative (v4.3.0+) and the `theme/`
+    layout (v4.6.0+) are named separately.
+
+### Added
+
+- README: `app.contactForm` is documented (shape, and absent rather than
+    empty when the form is not configured); the BEM list gains
+    `.contact-form__label-text`, `.contact-form__recipient` and
+    `.contact-form__decoy`; field notes cover a required checkbox, the required
+    `select` placeholder, skipped malformed fields and the honeypot-name clash;
+    a typo in `obfuscation` is documented as falling back to `entities`.
+- README: Generated Output (rendered by `nera build`), Development watch-mode
+    note, Contributing, Author, Links and Compatibility sections, and the
+    `## 📦 License` heading, matching the rest of the plugin fleet.
+
 ## [1.1.0] - 2026-07-24
 
 ### Changed
