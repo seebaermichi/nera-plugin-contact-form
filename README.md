@@ -253,7 +253,7 @@ content and includes the form partial:
 extends ../layouts/layout
 
 block content
-  section.contact
+  main.contact
     != content
     include ../vendor/plugin-contact-form/contact-form
 ```
