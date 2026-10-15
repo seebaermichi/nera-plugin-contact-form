@@ -14,8 +14,8 @@
         ".": "./index.js"
     },
     "bin": {
-        "publish-template": "./bin/publish-template.js",
-        "nera-contact-form": "./bin/publish-template.js"
+        "publish-template": "bin/publish-template.js",
+        "nera-contact-form": "bin/publish-template.js"
     },
     "files": [
         "bin",
@@ -39,7 +39,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/seebaermichi/nera-plugin-contact-form.git"
+        "url": "git+https://github.com/seebaermichi/nera-plugin-contact-form.git"
     },
     "bugs": {
         "url": "https://github.com/seebaermichi/nera-plugin-contact-form/issues"
