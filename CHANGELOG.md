@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-11-19
+
+### Fixed
+
+- The shipped `config/contact-form.yaml` no longer sets `recipient: hello@example.com`. `nera add contact-form` copies that file into a site that has none, which rendered a form addressing mail to example.com. The recipient is now a commented-out example: until the site sets its own, the form does not render and the build warns. A site that got the file that way should replace `hello@example.com` with its own address.
+
 ## [1.1.1] - 2026-10-08
 
 ### Fixed

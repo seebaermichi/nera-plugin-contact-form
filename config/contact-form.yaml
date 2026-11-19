@@ -11,8 +11,10 @@
 # ── Global keys ──────────────────────────────────────────────────────────────
 
 # Where the message is addressed. Required — without it the form does not
-# render. The address is never printed as readable text (see `obfuscation`).
-recipient: hello@example.com
+# render, and the build warns. Set your own address; the example is commented
+# out so a copied file never sends mail to example.com. The address is never
+# printed as readable text (see `obfuscation`).
+# recipient: hello@example.com
 
 # How the recipient address is protected from spam scrapers:
 #   entities   (default) — every character is emitted as an HTML numeric
